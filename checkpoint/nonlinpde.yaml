@@ -1,0 +1,28 @@
+--batch_size: 24
+--constraint: moment # constraint type: can be moment\frozen\free
+--diffusivity: 0.3
+--dt: 0.01 # time step size for each delta-t block
+--end_noise_level: 0.01 # noise level for generated data at t=T
+--gpu: 0
+--initfreq: 4
+--interp_degree: 2
+--interp_mesh_size: 5
+--kernel_size: 7 # convolution kernel size: 5 or 7
+--layer: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+--max_order: 2
+--maxiter: 20000
+--nonlinear_coefficient: 15
+--nonlinear_interp_degree: 4
+--nonlinear_interp_mesh_bound: 15.0
+--nonlinear_interp_mesh_size: 20
+--precision: double # precision of modules: can be double\float
+--recordcycle: 200
+--recordfile: convergence # convergence record file
+--repeatnum: 25
+--savecycle: 10000
+--start_noise_level: 0.01 # noise level for generated data at t=0
+--taskdescriptor: nonlinpde7x7moment2order-double
+--teststepnum: 80
+--xn: 50
+--yn: 50
+
