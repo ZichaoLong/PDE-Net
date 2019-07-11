@@ -57,5 +57,6 @@ with torch.no_grad():
     torch.save(uvars, 'checkpoint/'+options['--name']+'/uvars'+str(batch_num))
     torch.save(updatevars, 'checkpoint/'+options['--name']+'/updatevars'+str(batch_num))
 with open(outputfile,'a') as output:
+    print("errs: trainedblocknum x current_batch_size x T/dt: ", errs.shape, file=output)
     print('errs[-1].max(): ', errs[-1].max(), file=output)
 #%%

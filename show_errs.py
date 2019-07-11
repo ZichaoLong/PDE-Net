@@ -3,8 +3,9 @@ import numpy as np
 import torch
 import conf
 from pltutils import *
+import matplotlib
 
-name = 'burgers-2-stab0.1-sparse0.001-msparse0.001-seed3-3'
+name = 'burgers-2-stab0-sparse0.005-msparse0.001-datast1-size5-noise0.001'
 block = 18
 configfile = 'checkpoint/'+name+'/options.yaml'
 options = conf.setoptions(configfile=configfile,isload=True)

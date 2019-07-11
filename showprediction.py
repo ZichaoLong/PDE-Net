@@ -6,7 +6,7 @@ import torch
 import conf
 from pltutils import *
 
-configfile = 'checkpoint/'+'linpde7x7moment4order0.015dt0.015noise-double'+'/options.yaml'
+configfile = 'checkpoint/'+ 'burgers-2-stab0-sparse0.005-msparse0.001-datast1-size5-noise0.001'+'/options.yaml'
 
 options = linpdeconfig.setoptions(configfile=configfile,isload=True)
 

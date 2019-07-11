@@ -7,9 +7,9 @@
 #SBATCH --gres=gpu:1
 #SBATCH -t 8:00:00
 
-cd ~/workspace/expression/code
-name='burgers-frozen-stab0.1-sparse0.001-msparse0.001-datast1-seed0-9'
-DEVICES=4
+cd `pwd`
+name='burgers-noise0.001'
+DEVICES=8
 REPEATSIZE=20
 for ((i=0;i<$REPEATSIZE;i++))
 do

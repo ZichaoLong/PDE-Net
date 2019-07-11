@@ -12,14 +12,17 @@ import conf,setenv,initparameters
 kw = None
 # kw = {
 #         '--name':'test',
-#         '--device':'cuda',
-#         '--constraint':'2',
+#         '--dtype':'double',
+#         '--device':'cuda:0',
+#         '--constraint':'frozen',
 #         # computing region
 #         '--eps':2*np.pi,
 #         '--dt':1e-2,
+#         '--cell_num':1,
 #         '--blocks':'0-6,9,12,15,18',
 #         # super parameters of network
-#         '--kernel_size':7,
+#         '--kernel_size':5,
+#         '--max_order':2,
 #         '--dx':2*np.pi/32,
 #         '--hidden_layers':3,
 #         '--scheme':'upwind',
@@ -36,13 +39,17 @@ kw = None
 #         # data transform
 #         '--start_noise':0.001,
 #         '--end_noise':0.001,
-#         # else
-#         '--stablize':0.1,
-#         '--sparsity':0.001,
+#         # others
+#         '--stablize':0.0,
+#         '--sparsity':0.005,
 #         '--momentsparsity':0.001,
-#         '--npseed':1,
-#         '--torchseed':1,
+#         '--npseed':-1,
+#         '--torchseed':-1,
 #         '--maxiter':2000,
+#         '--recordfile':'None',
+#         '--recordcycle':200,
+#         '--savecycle':-1,
+#         '--start_from':-1,
 #         }
 options = conf.setoptions(argv=sys.argv[1:],kw=kw,configfile=None)
 
@@ -88,8 +95,11 @@ for block in blocks:
     # generate data
     u_obs,u_true,u = \
             setenv.data(model,data_model,globalnames,sampling,addnoise,block,data_start_time)
+    print("u_obs shape: batchsize x channelNum x xgridsize x ygridsize")
     print(u_obs[0].shape)
+    print("u_obs.abs().max()")
     print(u_obs[0].abs().max())
+    print("u_obs variance")
     print(initparameters.trainvar(model.UInputs(u_obs[0])))
     # set NumpyFunctionInterface
     def forward():
@@ -132,11 +142,13 @@ for block in blocks:
         xopt = bfgs(nfi.f,nfi.flat_param,nfi.fprime,gtol=2e-16,maxiter=maxiter, callback=callback)
         # xopt,f,d = lbfgsb(nfi.f, nfi.flat_param, nfi.fprime, m=maxiter, callback=callback, factr=1e7, pgtol=1e-8,maxiter=maxiter,iprint=0)
         np.set_printoptions(precision=2, linewidth=90)
+        print("convolution moment and kernels")
         for k in range(max_order+1):
             for j in range(k+1):
                 print((model.__getattr__('fd'+str(j)+str(k-j)).moment).data.cpu().numpy())
                 print((model.__getattr__('fd'+str(j)+str(k-j)).kernel).data.cpu().numpy())
         for p in model.expr_params():
+            print("SymNet parameters")
             print(p.data.cpu().numpy())
     except RuntimeError as Argument:
         with callback.open() as output:
@@ -166,10 +178,13 @@ for block in blocks:
 u_obs,u_true,u = \
         setenv.data(model,data_model,globalnames,sampling,addnoise,block=1,data_start_time=0)
 with callback.open() as output:
+    print("u_obs.abs().max()", file=output)
     print(u_obs[0].abs().max(), file=output)
 with torch.no_grad():
     with callback.open() as output:
+        print("model(u_obs[0],T=50*dt).abs().max()", file=output)
         print(model(u_obs[0], T=50*dt).abs().max(), file=output)
+        print("model(u_obs[0],T=100*dt).abs().max()", file=output)
         print(model(u_obs[0], T=300*dt).abs().max(), file=output)
 #%%
 

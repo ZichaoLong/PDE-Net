@@ -108,7 +108,7 @@ def setoptions(*, argv=None, kw=None, configfile=None, isload=False):
     if not configfile is None: # update options from configfile
         options['--configfile'] = configfile
         with open(configfile, 'r') as f:
-            options.update(yaml.load(f))
+            options.update(yaml.load(f,Loader=yaml.FullLoader))
     options.update(kw) # update options from externel parameters
     options.update(argv) # update options from command line 
 

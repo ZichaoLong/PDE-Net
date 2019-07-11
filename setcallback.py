@@ -18,7 +18,9 @@ class setcallback(object):
 
     @property
     def stage(self):
-    """self.stage: a descriptor(str type) of current training stage"""
+        """
+        self.stage: a descriptor(str type) of current training stage
+        """
         return self._stage
     @stage.setter
     def stage(self, v):
@@ -29,7 +31,9 @@ class setcallback(object):
             print('current stage is: '+v, file=output)
     @contextlib.contextmanager
     def open(self):
-    """self.open: define the output record file"""
+        """
+        self.open: define the output record file
+        """
         isfile = not (self.recordfile is None or self.recordfile == 'None')
         if isfile:
             output = open(self.savepath+'/'+self.recordfile, 'a')
