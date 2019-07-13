@@ -1,5 +1,6 @@
 """
-compare relative errs
+compare relative errs: 
+change 'name1', 'name2' to compare test errs between different tasks
 """
 #%%
 from numpy import *

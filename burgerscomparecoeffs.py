@@ -1,14 +1,17 @@
 """
 compare coeffs
+change name1, name2 to compare coeffs between different tasks
 """
 #%%
 from numpy import *
 import torch
 import matplotlib.pyplot as plt
 import conf
+name1 = 'burgers-2-stab0-sparse0-msparse0.001-datast1-size5-noise0.001-block15'
+name2 = 'burgers-2-stab0-sparse0.005-msparse0.001-datast1-size5-noise0.001-block15'
 D = []
-D.append(torch.load('coeffs/nosparse-15')) # blue
-D.append(torch.load('coeffs/sparse-15')) # orange
+D.append(torch.load('coeffs/'+name1)) # blue
+D.append(torch.load('coeffs/'+name2)) # orange
 # D.append(torch.load('checkpoint/'+name3+'/errs')) # red
 # D.append(torch.load('checkpoint/'+name4+'/errs')) # yellow
 
@@ -61,12 +64,13 @@ ax.xaxis.set_tick_params(labelsize=10)
 ax.yaxis.set_tick_params(labelsize=10)
 #%% print coeffs err
 import torch
-showblock = [1,2,9,12,15]
+showblock = [2,9,12,15]
 Dnosparse = []
 Dsparse = []
 for k in showblock:
     #Dnosparse.append(torch.load('coeffs/nosparse-'+str(k)))
-    Dsparse.append(torch.load('coeffs/sparse-'+str(k)))
+    Dsparse.append(torch.load('coeffs/burgers-2-stab0-sparse0.005-msparse0.001-datast1-size5-noise0.001-block'+str(k)))
+    Dnosparse.append(torch.load('coeffs/burgers-2-stab0-sparse0-msparse0.001-datast1-size5-noise0.001-block'+str(k)))
 #%% 
 def normalize(c):
     c = c.copy()
