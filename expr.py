@@ -1,7 +1,12 @@
 import numpy as np
 import torch
 import sympy
-import matlab
+ISINSTALLMATLAB = True
+try:
+    import matlab
+except ModuleNotFoundError:
+    ISINSTALLMATLAB = False
+    matlab = None
 
 __all__ = ['poly',]
 
