@@ -7,6 +7,7 @@ compare prediction and err:
 #%%
 import sys
 import time
+from numpy import *
 import numpy as np
 import torch
 import conf,setenv,initparameters
@@ -14,35 +15,28 @@ import matplotlib.pyplot as plt
 import aTEAM.pdetools as pdetools
 from pltutils import *
 #%%
-options_ref = configfile_ref = None
+options_ref = configfile = None
 options_ref = conf.default_options()
-options_ref['--name'] = 'tmp'
-options_ref['--dataname'] = 'burgers'
-options_ref['--eps'] = 2*np.pi
+options_ref['--dataname'] = 'heat'
+options_ref['--viscosity'] = 0.1
 options_ref['--dt'] = 1e-2
-options_ref['--dx'] = eps/32
 options_ref['--max_dt'] = 1e-2/16
-options_ref['--viscosity'] = 0.05
 options_ref['--zoom'] = 4
-options_ref['--batch_size'] = 7
+options_ref['--batch_size'] = 2
 options_ref['--data_timescheme'] = 'rk2'
-options_ref['--channel_names'] = 'u,v'
-options_ref['--freq'] = 4
-options_ref = conf.setoptions(argv=None,kw=options_ref,configfile=configfile_ref)
+options_ref['--channel_names'] = 'u'
+options_ref = conf.setoptions(argv=None,kw=options_ref,configfile=configfile)
 if torch.cuda.is_available():
     options_ref['--device'] = 'cuda'
 else:
     options_ref['--device'] = 'cpu'
 
 globalnames_ref, callback_ref, model_ref, data_model_ref, sampling_ref, addnoise_ref = setenv.setenv(options_ref)
+
 globals().update(globalnames_ref)
 
-torch.cuda.manual_seed_all(globalnames_ref['torchseed'])
-torch.manual_seed(globalnames_ref['torchseed'])
-np.random.seed(globalnames_ref['npseed'])
-
 # initialization of parameters
-initparameters.initkernels(model_ref,'upwind')
+initparameters.initkernels(model_ref)
 initparameters.initexpr(model_ref, viscosity=viscosity, pattern=dataname)
 
 # model_ref.polys[k].coeffs(iprint=1)
@@ -51,7 +45,7 @@ for poly in model_ref.polys:
 
 #%%
 options_1 = {}
-options_1['--name'] = 'burgers-2-stab0-sparse0.005-msparse0.001-datast1-size5-noise0.001'
+options_1['--name'] = 'heat-2-stab0-sparse0.005-msparse0.001-datast0-size5-noise0.001'
 configfile_1 = 'checkpoint/'+options_1['--name']+'/options.yaml'
 options_1 = conf.setoptions(argv=None,kw=None,configfile=configfile_1,isload=True)
 if torch.cuda.is_available():
@@ -66,7 +60,7 @@ callback_1.load(15)
 
 #%%
 options_2 = {}
-options_2['--name'] = 'burgers-frozen-stab0-sparse0.005-msparse0.001-datast1-size5-noise0.001'
+options_2['--name'] = 'heat-frozen-stab0-sparse0.005-msparse0.001-datast0-size5-noise0.001'
 configfile_2 = 'checkpoint/'+options_2['--name']+'/options.yaml'
 options_2 = conf.setoptions(argv=None,kw=None,configfile=configfile_2,isload=True)
 if torch.cuda.is_available():
@@ -79,80 +73,47 @@ globalnames_2['--batch_size'] = 2
 
 callback_2.load(15)
 
-#%% generate test data
+#%% test
 globalnames = globalnames_ref
 callback =       callback_ref
 model =             model_ref
 data_model =   data_model_ref
 sampling =       sampling_ref
 addnoise =       addnoise_ref
-T = 10e-2
-batch_size = 2
-globalnames['batch_size'] = batch_size
-_,_,u = setenv.data(model,data_model,globalnames,sampling,addnoise,block=1,data_start_time=0)
-#%% test
-init = u[0]
+T = 2e-2
+init = pdetools.init.initgen(mesh_size=data_model.mesh_size, freq=1, 
+        device=device, batch_size=model.channel_num*batch_size)*0.5
+init += init.abs().max(dim=-1, keepdim=True)[0].max(dim=-2, keepdim=True)[0]*\
+        torch.randn(model.channel_num*batch_size,1,1, dtype=dtype, device=device)*\
+        torch.rand(model.channel_num*batch_size,1,1, dtype=dtype, device=device)*2
 h = plt.figure()
-stream0 = h.add_subplot(2,3,1,aspect='equal')
-xdiffax = h.add_subplot(2,3,4,aspect='equal')
-a0 = h.add_subplot(2,3,2,aspect='equal')
-b0 = h.add_subplot(2,3,3,aspect='equal')
-a1 = h.add_subplot(2,3,5,aspect='equal')
-b1 = h.add_subplot(2,3,6,aspect='equal')
-def resetticks(*argv):
-    for par in argv:
-        par.set_xticks([]); par.set_yticks([])
-resetticks(a0,b0,a1,b1)
-x1 = init
+a0 = h.add_subplot(121)
+a1 = h.add_subplot(122)
+x0 = pdetools.init.initgen(mesh_size=data_model.mesh_size, freq=freq, device=device, batch_size=batch_size)
+x1 = x0
 x0 = sampling(x1)
-print(initparameters.trainvar(model.UInputs(x0)))
 x0,_ = addnoise(x0,x0)
-
-Y,X = np.mgrid[0:1:(mesh_size[0]+1)*1j,0:1:(mesh_size[1]+1)*1j]
-Y,X = Y[:-1,:-1],X[:-1,:-1]
-for i in range(40):
-    stream0.clear(); xdiffax.clear()
-    a0.clear(); a1.clear()
-    b0.clear(); b1.clear()
-
-    speed0 = torch.sqrt(x0[0,0]**2+x0[0,1]**2).data.cpu().numpy()
-    stream0.streamplot(X,Y,x0[0,0].data.cpu().numpy(),x0[0,1].data.cpu().numpy(),density=0.8,color='k',linewidth=5*speed0/speed0.max())
-    timea0 = a0.imshow(x0[0,0].data.cpu().numpy()[::-1], cmap='jet')
-    timeb0 = b0.imshow(x0[0,1].data.cpu().numpy()[::-1], cmap='jet')
-    timec0 = h.colorbar(timea0, ax=a0)
-    timed0 = h.colorbar(timeb0, ax=b0)
-    resetticks(a0,b0)
-    stream0.set_title('max-min(speed)={:.2f}'.format(speed0.max()-speed0.min()))
-
-    xdiff = torch.sqrt((x0[0,0]-sampling(x1)[0,0])**2+(x0[0,1]-sampling(x1)[0,1])**2)
-    xdiffim = xdiffax.imshow(xdiff.data.cpu().numpy()[::-1],cmap='jet')
-    specta1 = a1.imshow(sampling(x1)[0,0].data.cpu().numpy()[::-1], cmap='jet')
-    spectb1 = b1.imshow(sampling(x1)[0,1].data.cpu().numpy()[::-1], cmap='jet')
-    spectc1 = h.colorbar(specta1, ax=a1)
-    spectd1 = h.colorbar(spectb1, ax=b1)
-    resetticks(a1,b1,xdiffax)
-    xdiffax.set_title('max={:.2f},min={:.2f}'.format(xdiff.max().item(),xdiff.min().item()))
-
-    h.suptitle('t={:.1e}'.format(i*T))
-
-    speedrange = max(x1[0,0].max().item()-x1[0,0].min().item(),x1[0,1].max().item()-x1[0,1].min().item())
-    relsolutiondiff = (x0-sampling(x1)).abs().max().item()/speedrange
-
+for i in range(1,21):
     startt = time.time()
     x0 = model.predict(x0, T=T)
     x0 = x0.data
     with torch.no_grad():
         x1 = data_model.predict(x1, T=T)
     stopt = time.time()
-    print('elapsed-time:{:.1f}'.format(stopt-startt)+
-            ', speedrange:{:.0f}'.format(speedrange)+
-            ', relsolutiondiff:{:.4f}'.format(relsolutiondiff)
-            )
-    if i > 0:
-        timec0.remove()
-        timed0.remove()
-        spectc1.remove()
-        spectd1.remove()
+    print('elapsed-time={:.1f}, sup(|x0-x1|)={:.2f}'.format(stopt-startt, (x0-sampling(x1)).abs().max().item()))
+    a0.clear()
+    a1.clear()
+    xplot0 = x0 if batch_size == 1 else x0[0]
+    xplot1 = x1 if batch_size == 1 else x1[0]
+    b0 = a0.imshow(xplot0.cpu().numpy(), cmap='jet')
+    b1 = a1.imshow(xplot1.cpu().numpy(), cmap='jet')
+    a0.set_title('t={:.1e},max={:.2f},min={:.2f}'.format(i*T,x0.max(),x0.min()))
+    a1.set_title('t={:.1e},max={:.2f},min={:.2f}'.format(i*T,x1.max(),x1.min()))
+    if i > 1:
+        c0.remove()
+        c1.remove()
+    c0 = h.colorbar(b0, ax=a0)
+    c1 = h.colorbar(b1, ax=a1)
     plt.pause(1e-3)
 
 ##############################################################
@@ -173,7 +134,7 @@ x1 = u[0][0]
 x0 = sampling(x1)
 x0,_ = addnoise(x0,x0)
 
-showstep = [0,100,200,300]
+showstep = [0,50,100,150]
 x_true = []
 for j in showstep:
     with torch.no_grad():
@@ -185,58 +146,43 @@ for j in showstep:
         x_true.append(xtmp)
 #%% show prediction or err step 0.2
 u_plot = None
-v_plot = None
 def resetticks(*argv):
     for par in argv:
         par.set_xticks([]); par.set_yticks([])
 def showprediction(x_plot, K):
     global u_plot
-    global v_plot
     umin=min(x_plot[i][0][0].min() for i in range(len(showstep)))
     umax=max(x_plot[i][0][0].max() for i in range(len(showstep)))
-    vmin=min(x_plot[i][0][1].min() for i in range(len(showstep)))
-    vmax=max(x_plot[i][0][1].max() for i in range(len(showstep)))
     resetticks(*F0.a.flatten())
-    resetticks(*F1.a.flatten())
     for i in range(len(showstep)):
         if sharecolorbar:
             u_plot = F0.a[K,i].imshow(x_plot[i][0],vmin=umin,vmax=umax,cmap='jet')
-            v_plot = F1.a[K,i].imshow(x_plot[i][1],vmin=vmin,vmax=vmax,cmap='jet')
         else:
             F0(x_plot[i][0],(K,i))
-            F1(x_plot[i][1],(K,i))
         F0.a[K,i].set_title(r'$T$={:.1f}'.format(showstep[i]*dt), fontsize=20)
-        F1.a[K,i].set_title(r'$T$={:.1f}'.format(showstep[i]*dt), fontsize=20)
     if sharecolorbar:
         F0.h.colorbar(u_plot,ax=list(F0.a.flatten()))
-        F1.h.colorbar(v_plot,ax=list(F1.a.flatten()))
 def showpredictionerrs(x_plot, K):
     global u_plot
-    global v_plot
-    vmin = -1
-    vmax = 1
+    vmin = -0.005
+    vmax = 0.005
     resetticks(*F0.a.flatten())
-    resetticks(*F1.a.flatten())
     for i in range(len(showstep)):
         if sharecolorbar:
             u_plot = F0.a[K,i].imshow(x_plot[i][0],vmin=vmin,vmax=vmax,cmap='jet')
-            v_plot = F1.a[K,i].imshow(x_plot[i][1],vmin=vmin,vmax=vmax,cmap='jet')
         F0.a[K,i].set_title(r'$T$={:.1f}'.format(showstep[i]*dt), fontsize=20)
-        F1.a[K,i].set_title(r'$T$={:.1f}'.format(showstep[i]*dt), fontsize=20)
 
 #%% show prediction or err step 1
 ############### set SHOWPREDITIONORERR = 'prediction' or 'err' ###############
 SHOWPREDITIONORERR = 'prediction' # 'prediction', 'err'
 if SHOWPREDITIONORERR == 'prediction':
     F0 = pltnewmeshbar((3,4))
-    F1 = pltnewmeshbar((3,4))
     K = 0
     sharecolorbar = False
     showprediction(x_true, K) # show true solution on K-th row of F0,F1
 else:
     sharecolorbar = True
     F0 = pltnewmeshbar((2,4))
-    F1 = pltnewmeshbar((2,4))
 
 #%% show prediction or err step 2: set K = 1 or 2, globalnames = globalnames_1 or globalnames_2 etc.
 K =                       1
@@ -266,38 +212,12 @@ else:
 #%% show err step 3
 if sharecolorbar:
     F0.h.colorbar(u_plot,ax=list(F0.a.flatten()))
-    F1.h.colorbar(v_plot,ax=list(F1.a.flatten()))
 
-# F0 = pltnewmeshbar((3,4))
-# F1 = pltnewmeshbar((3,4))
-# resetticks(*F0.a.flatten())
-# resetticks(*F1.a.flatten())
-# for i in range(len(showstep)):
-#     err = x_infe[i]-x_true[i]
-#     F0(x_true[i][0],(0,i))
-#     F0.a[0,i].set_title(r'$T$={:.1f}'.format(showstep[i]*dt), fontsize=20)
-#     F0(x_infe[i][0], (1,i))
-#     F0.a[1,i].set_title(r'$T$={:.1f}'.format(showstep[i]*dt), fontsize=20)
-#     F0(err[0],(2,i))
-#     F0.a[2,i].set_title(r'$T$={:.1f}'.format(showstep[i]*dt), fontsize=20)
-#     F1(x_true[i][1],(0,i))
-#     F1.a[0,i].set_title(r'$T$={:.1f}'.format(showstep[i]*dt), fontsize=20)
-#     F1(x_infe[i][1], (1,i))
-#     F1.a[1,i].set_title(r'$T$={:.1f}'.format(showstep[i]*dt), fontsize=20)
-#     F1(err[1],(2,i))
-#     F1.a[2,i].set_title(r'$T$={:.1f}'.format(showstep[i]*dt), fontsize=20)
 #%% coeffs
 with open('coeffs/coeffs.txt', 'a') as output:
     tsym,csym = model.poly0.coeffs(calprec=8)
-    print('name='+name, file=output)
+    print(name, file=output)
     print('poly0', file=output)
     print(tsym[:8], file=output)
     print(csym[:8], file=output)
-    tsym,csym = model.poly1.coeffs(calprec=8)
-    print('poly1', file=output)
-    print(tsym[:8], file=output)
-    print(csym[:8], file=output)
-
-
 #%%
-
