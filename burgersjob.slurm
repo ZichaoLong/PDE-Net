@@ -60,3 +60,4 @@ for constraint in ${CONSTRAINT[@]}; do
         done
     done
 done
+wait

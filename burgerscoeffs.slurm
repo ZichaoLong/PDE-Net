@@ -49,6 +49,7 @@ for sparsity in ${SPARSITY[@]}; do
         let i++
     done
 done
+wait
 
 BLOCK=(2 9 12 15)
 
@@ -63,3 +64,4 @@ for sparsity in ${SPARSITY[@]}; do
         python burgerscoeffs.py ${basename} ${REPEATSIZE} ${block}
     done
 done
+wait

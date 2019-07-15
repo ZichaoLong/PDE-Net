@@ -6,19 +6,18 @@ from numpy import *
 import torch
 import matplotlib.pyplot as plt
 import conf
-SEEDNAME='seed0-9'
-name1 = 'heat-frozen-stab0.1-size7-'+SEEDNAME
-name2 = 'heat-2-stab0.1-size5-'+SEEDNAME
-name3 = 'heat-2-stab0.1-size7-'+SEEDNAME
+name1 = 'heat-frozen-stab0-sparse0.005-msparse0-datast0-size5-noise0.001'
+name2 = 'heat-2-stab0-sparse0.005-msparse0.001-datast0-size5-noise0.001'
+# name3 = 
 errs = []
 errs.append(torch.load('checkpoint/'+name1+'/errs')) # blue
 errs.append(torch.load('checkpoint/'+name2+'/errs')) # orange
-errs.append(torch.load('checkpoint/'+name3+'/errs')) # red
+# errs.append(torch.load('checkpoint/'+name3+'/errs')) # red
 configfile = 'checkpoint/'+name1+'/options.yaml'
 options = conf.setoptions(configfile=configfile,isload=True)
 
-edgecolorlist = ('#1B2ACC','#CC4F1B', 'red') #, 'yellow')
-facecolorlist = ('#089FFF','#FF9848', 'red') #, 'yellow')
+edgecolorlist = ('#1B2ACC','#CC4F1B') #, 'red') #, 'yellow')
+facecolorlist = ('#089FFF','#FF9848') #, 'red') #, 'yellow')
 
 alpha = 0.4 # facecolor transparency
 
@@ -26,7 +25,7 @@ showblock = [0,1,9,12,15]
 showblockidx = list(options['--blocks'].index(block) for block in showblock)
 fig,ax = plt.subplots(1,len(showblock), sharex=False, sharey=True)
 title = ''
-upq = 95
+upq = 100
 downq = 25
 n = 40
 x = arange(1,n,dtype=float64)

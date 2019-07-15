@@ -7,8 +7,8 @@
 #SBATCH --gres=gpu:1
 #SBATCH -t 8:00:00
 
-cd ~/workspace/expression/code
-name='heat-frozen-sparse0'
+cd `pwd`
+name='heat-noise0.001'
 DEVICES=6
 REPEATSIZE=20
 for ((i=0;i<$REPEATSIZE;i++))
