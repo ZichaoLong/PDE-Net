@@ -17,12 +17,12 @@ from pltutils import *
 options_ref = configfile_ref = None
 options_ref = conf.default_options()
 options_ref['--name'] = 'tmp'
-options_ref['--dataname'] = 'burgers'
+options_ref['--dataname'] = 'reactiondiffusion'
 options_ref['--eps'] = 2*np.pi
 options_ref['--dt'] = 1e-2
 options_ref['--dx'] = 2*np.pi/32
-options_ref['--max_dt'] = 1e-2/16
-options_ref['--viscosity'] = 0.05
+options_ref['--max_dt'] = 1e-4
+options_ref['--viscosity'] = 0.1
 options_ref['--zoom'] = 4
 options_ref['--batch_size'] = 7
 options_ref['--data_timescheme'] = 'rk2'
@@ -51,7 +51,7 @@ for poly in model_ref.polys:
 
 #%%
 options_1 = {}
-options_1['--name'] = 'burgers-2-stab0-sparse0.005-msparse0.001-datast1-size5-noise0.001'
+options_1['--name'] = 'reactiondiffusion-2-stab0-sparse0.005-msparse0.001-datast0-size5-noise0.001'
 configfile_1 = 'checkpoint/'+options_1['--name']+'/options.yaml'
 options_1 = conf.setoptions(argv=None,kw=None,configfile=configfile_1,isload=True)
 if torch.cuda.is_available():
@@ -60,13 +60,13 @@ else:
     options_1['--device'] = 'cpu'
 
 globalnames_1, callback_1, model_1, data_model_1, sampling_1, addnoise_1 = setenv.setenv(options_1)
-globalnames_1['--batch_size'] = 2
+globalnames_1['batch_size'] = 2
 
 callback_1.load(15)
 
 #%%
 options_2 = {}
-options_2['--name'] = 'burgers-frozen-stab0-sparse0.005-msparse0.001-datast1-size5-noise0.001'
+options_2['--name'] = 'reactiondiffusion-frozen-stab0-sparse0.005-msparse0.001-datast0-size5-noise0.001'
 configfile_2 = 'checkpoint/'+options_2['--name']+'/options.yaml'
 options_2 = conf.setoptions(argv=None,kw=None,configfile=configfile_2,isload=True)
 if torch.cuda.is_available():
@@ -75,7 +75,7 @@ else:
     options_2['--device'] = 'cpu'
 
 globalnames_2, callback_2, model_2, data_model_2, sampling_2, addnoise_2 = setenv.setenv(options_2)
-globalnames_2['--batch_size'] = 2
+globalnames_2['batch_size'] = 2
 
 callback_2.load(15)
 
@@ -213,8 +213,8 @@ def showprediction(x_plot, K):
 def showpredictionerrs(x_plot, K):
     global u_plot
     global v_plot
-    vmin = -1
-    vmax = 1
+    vmin = -0.1
+    vmax = 0.1
     resetticks(*F0.a.flatten())
     resetticks(*F1.a.flatten())
     for i in range(len(showstep)):

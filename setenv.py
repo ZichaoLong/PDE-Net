@@ -4,6 +4,7 @@ import torch
 import aTEAM.pdetools as pdetools
 import aTEAM.pdetools.example.burgers2d as burgers2d
 import aTEAM.pdetools.example.cde2d as cde2d
+import aTEAM.pdetools.example.rd2d as rd2d
 import polypde
 import conf,transform,setcallback
 
@@ -94,6 +95,15 @@ def setenv(options):
                 timescheme=globalnames['data_timescheme']
                 )
         data_model.coe[0,2] = data_model.coe[2,0] = viscosity
+    elif options['--dataname'].upper() == 'REACTIONDIFFUSION':
+        max_dt = globalnames['max_dt']
+        data_model = rd2d.RDTime2d(max_dt=max_dt,
+                mesh_size=mesh_size,
+                mesh_bound=mesh_bound,
+                viscosity=viscosity,
+                beta=1,
+                timescheme=globalnames['data_timescheme']
+                )
     data_model.to(device=model.device)
     if globalnames['dtype'] == torch.float64:
         data_model.double()
@@ -117,12 +127,14 @@ def data(model, data_model, globalnames, sampling, addnoise, block, data_start_t
     freq, batch_size, device, dtype, dt = \
             globalnames['freq'], globalnames['batch_size'], \
             globalnames['device'], globalnames['dtype'], globalnames['dt']
+    initrange = 2
+    initshift = (1 if globalnames['dataname']=='reactiondiffusion' else 2)
     u0 = pdetools.init.initgen(mesh_size=data_model.mesh_size, 
             freq=freq, 
             batch_size=model.channel_num*batch_size, 
             device=device, 
-            dtype=dtype)*2
-    u0 += 4*(torch.rand(model.channel_num*batch_size,1,1,dtype=dtype,device=device)-0.5)
+            dtype=dtype)*initrange
+    u0 += 2*initshift*(torch.rand(model.channel_num*batch_size,1,1,dtype=dtype,device=device)-0.5)
     u0 = u0.view([batch_size, model.channel_num]+data_model.mesh_size.tolist())
     with torch.no_grad():
         if batch_size>1:

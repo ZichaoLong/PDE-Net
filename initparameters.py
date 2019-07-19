@@ -68,6 +68,31 @@ def initexpr(model, viscosity=0.1, pattern='random'):
     elif pattern.upper() == 'HEAT':
         rhi[0].layer_final.weight.data[0,3] = viscosity
         rhi[0].layer_final.weight.data[0,5] = viscosity
+    elif pattern.upper() == 'REACTIONDIFFUSION':
+        rhi[0].layer0.weight.data[0,0] = 1 # u
+        rhi[0].layer0.weight.data[1,0] = 1 # u
+        rhi[0].layer1.weight.data[0,6] = 1 # v
+        rhi[0].layer1.weight.data[1,6] = 1 # v
+        rhi[0].layer2.weight.data[0,12] = 1 # u^2
+        rhi[0].layer2.weight.data[0,13] = 1 # v^2
+        rhi[0].layer2.weight.data[1,0] = -1 # -u
+        rhi[0].layer2.weight.data[1,6] = 1 # v
+        rhi[0].layer_final.weight.data[0,0] = 1 # u
+        rhi[0].layer_final.weight.data[0,14] = 1 # (u^2+v^2)(v-u)
+        rhi[0].layer_final.weight.data[0,3] = viscosity
+        rhi[0].layer_final.weight.data[0,5] = viscosity
+        rhi[1].layer0.weight.data[0,0] = 1 # u
+        rhi[1].layer0.weight.data[1,0] = 1 # u
+        rhi[1].layer1.weight.data[0,6] = 1 # v
+        rhi[1].layer1.weight.data[1,6] = 1 # v
+        rhi[1].layer2.weight.data[0,12] = 1 # u^2
+        rhi[1].layer2.weight.data[0,13] = 1 # v^2
+        rhi[1].layer2.weight.data[1,0] = 1 # u
+        rhi[1].layer2.weight.data[1,6] = 1 # v
+        rhi[1].layer_final.weight.data[0,6] = 1 # v
+        rhi[1].layer_final.weight.data[0,14] = -1 # -(u^2+v^2)(u+v)
+        rhi[1].layer_final.weight.data[0,9] = viscosity
+        rhi[1].layer_final.weight.data[0,11] = viscosity
     return None
 
 def trainmean(inputs):
