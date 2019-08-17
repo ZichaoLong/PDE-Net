@@ -24,6 +24,6 @@ coeffs0[:min(len(tsym),40)] = csym[:min(len(tsym),40)]
 tsym,csym = model.poly1.coeffs(calprec=8)
 terms1 = tsym
 coeffs1[:min(len(tsym),40)] = csym[:min(len(tsym),40)]
-torch.save(dict(terms0=terms0,terms1=terms1,coeffs0=coeffs0,coeffs1=coeffs1),'coeffs/'+options['--name']+'-block'+str(block))
+torch.save(dict(terms0=terms0,terms1=terms1,coeffs0=coeffs0,coeffs1=coeffs1),'coeffs/'+options['--dataname']+'/'+options['--name']+'-block'+str(block))
 
 

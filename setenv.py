@@ -5,6 +5,7 @@ import aTEAM.pdetools as pdetools
 import aTEAM.pdetools.example.burgers2d as burgers2d
 import aTEAM.pdetools.example.cde2d as cde2d
 import aTEAM.pdetools.example.rd2d as rd2d
+import aTEAM.pdetools.example.cdr2d as cdr2d
 import polypde
 import conf,transform,setcallback
 
@@ -104,6 +105,15 @@ def setenv(options):
                 beta=1,
                 timescheme=globalnames['data_timescheme']
                 )
+    elif options['--dataname'].upper() == 'CDR':
+        max_dt = globalnames['max_dt']
+        data_model = cdr2d.CDRTime2d(max_dt=max_dt,
+                mesh_size=mesh_size,
+                mesh_bound=mesh_bound,
+                viscosity=viscosity,
+                beta=1,
+                timescheme=globalnames['data_timescheme'],
+                )
     data_model.to(device=model.device)
     if globalnames['dtype'] == torch.float64:
         data_model.double()
@@ -128,7 +138,8 @@ def data(model, data_model, globalnames, sampling, addnoise, block, data_start_t
             globalnames['freq'], globalnames['batch_size'], \
             globalnames['device'], globalnames['dtype'], globalnames['dt']
     initrange = 2
-    initshift = (1 if globalnames['dataname']=='reactiondiffusion' else 2)
+    initshift = (1 if (globalnames['dataname']=='reactiondiffusion') else 2)
+    # initshift = 1
     u0 = pdetools.init.initgen(mesh_size=data_model.mesh_size, 
             freq=freq, 
             batch_size=model.channel_num*batch_size, 

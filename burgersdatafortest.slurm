@@ -9,7 +9,7 @@
 
 cd `pwd`
 name='burgers-noise0.001'
-DEVICES=8
+DEVICES=4
 REPEATSIZE=20
 for ((i=0;i<$REPEATSIZE;i++))
 do

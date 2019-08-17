@@ -11,7 +11,7 @@ def default_options():
             '--eps':2*np.pi,
             '--dt':1e-2,
             '--cell_num':1,
-            '--blocks':'0-6,9,12,15,18',
+            '--blocks':'0-6,9,12,15',
             # super parameters of network
             '--kernel_size':7,
             '--max_order':2,

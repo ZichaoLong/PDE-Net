@@ -17,7 +17,7 @@ from pltutils import *
 options_ref = configfile_ref = None
 options_ref = conf.default_options()
 options_ref['--name'] = 'tmp'
-options_ref['--dataname'] = 'reactiondiffusion'
+options_ref['--dataname'] = 'cdr'
 options_ref['--eps'] = 2*np.pi
 options_ref['--dt'] = 1e-2
 options_ref['--dx'] = 2*np.pi/32
@@ -51,7 +51,7 @@ for poly in model_ref.polys:
 
 #%%
 options_1 = {}
-options_1['--name'] = 'reactiondiffusion-2-stab0-sparse0.005-msparse0.001-datast0-size5-noise0.001'
+options_1['--name'] = 'cdr-frozen-upwind-sparse0.005-noise0.001'
 configfile_1 = 'checkpoint/'+options_1['--name']+'/options.yaml'
 options_1 = conf.setoptions(argv=None,kw=None,configfile=configfile_1,isload=True)
 if torch.cuda.is_available():
@@ -60,13 +60,13 @@ else:
     options_1['--device'] = 'cpu'
 
 globalnames_1, callback_1, model_1, data_model_1, sampling_1, addnoise_1 = setenv.setenv(options_1)
-globalnames_1['batch_size'] = 2
+globalnames_1['--batch_size'] = 2
 
-callback_1.load(15)
+callback_1.load(24)
 
 #%%
 options_2 = {}
-options_2['--name'] = 'reactiondiffusion-frozen-stab0-sparse0.005-msparse0.001-datast0-size5-noise0.001'
+options_2['--name'] = 'cdr-2-upwind-sparse0.005-noise0.001'
 configfile_2 = 'checkpoint/'+options_2['--name']+'/options.yaml'
 options_2 = conf.setoptions(argv=None,kw=None,configfile=configfile_2,isload=True)
 if torch.cuda.is_available():
@@ -75,9 +75,9 @@ else:
     options_2['--device'] = 'cpu'
 
 globalnames_2, callback_2, model_2, data_model_2, sampling_2, addnoise_2 = setenv.setenv(options_2)
-globalnames_2['batch_size'] = 2
+globalnames_2['--batch_size'] = 2
 
-callback_2.load(15)
+callback_2.load(24)
 
 #%% generate test data
 globalnames = globalnames_ref
@@ -173,7 +173,7 @@ x1 = u[0][0]
 x0 = sampling(x1)
 x0,_ = addnoise(x0,x0)
 
-showstep = [0,100,200,300]
+showstep = [0,50,100,150]
 x_true = []
 for j in showstep:
     with torch.no_grad():
@@ -205,8 +205,8 @@ def showprediction(x_plot, K):
         else:
             F0(x_plot[i][0],(K,i))
             F1(x_plot[i][1],(K,i))
-        F0.a[K,i].set_title(r'$T$={:.1f}'.format(showstep[i]*dt), fontsize=20)
-        F1.a[K,i].set_title(r'$T$={:.1f}'.format(showstep[i]*dt), fontsize=20)
+        F0.a[K,i].set_title(r'$T$={:.1f}'.format(showstep[i]*dt), fontsize=30)
+        F1.a[K,i].set_title(r'$T$={:.1f}'.format(showstep[i]*dt), fontsize=30)
     if sharecolorbar:
         F0.h.colorbar(u_plot,ax=list(F0.a.flatten()))
         F1.h.colorbar(v_plot,ax=list(F1.a.flatten()))
@@ -221,8 +221,8 @@ def showpredictionerrs(x_plot, K):
         if sharecolorbar:
             u_plot = F0.a[K,i].imshow(x_plot[i][0],vmin=vmin,vmax=vmax,cmap='jet')
             v_plot = F1.a[K,i].imshow(x_plot[i][1],vmin=vmin,vmax=vmax,cmap='jet')
-        F0.a[K,i].set_title(r'$T$={:.1f}'.format(showstep[i]*dt), fontsize=20)
-        F1.a[K,i].set_title(r'$T$={:.1f}'.format(showstep[i]*dt), fontsize=20)
+        F0.a[K,i].set_title(r'$T$={:.1f}'.format(showstep[i]*dt), fontsize=30)
+        F1.a[K,i].set_title(r'$T$={:.1f}'.format(showstep[i]*dt), fontsize=30)
 
 #%% show prediction or err step 1
 ############### set SHOWPREDITIONORERR = 'prediction' or 'err' ###############

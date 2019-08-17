@@ -8,7 +8,7 @@
 #SBATCH -t 8:00:00
 
 cd `pwd`
-name='reactiondiffusion-noise0.001'
+name='cdr-noise0.001'
 DEVICES=4
 REPEATSIZE=20
 for ((i=0;i<$REPEATSIZE;i++))

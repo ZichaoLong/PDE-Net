@@ -9,14 +9,14 @@
 
 cd `pwd`
 export MKL_NUM_THREADS=6
-DATANAME="burgers"
-CONSTRAINT=(2)
+DATANAME="cdr"
+CONSTRAINT=(frozen)
 kernel_size=5
 stablize=0
-SPARSITY=(0.005)
-SCHEME=(central)
+SPARSITY=(0)
+SCHEME=(central upwind)
 momentsparsity=0.001
-viscosity=0.05
+viscosity=0.1
 noise=0.001
 data_start_time=1
 DEVICES=4
@@ -26,7 +26,7 @@ i=0
 for constraint in ${CONSTRAINT[@]}; do
     for scheme in ${SCHEME[@]}; do
         for sparsity in ${SPARSITY[@]}; do
-            # for ((trainidx=0;trainidx<24;trainidx++)) do
+            # for ((testidx=0;testidx<24;testidx++)) do
                 name=${DATANAME}-${constraint}-${scheme}-sparse${sparsity}-noise${noise}
                 for ((i=0;i<$REPEATSIZE;i++))
                 do

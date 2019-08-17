@@ -6,8 +6,8 @@ from numpy import *
 import torch
 import matplotlib.pyplot as plt
 import conf
-name1 = 'heat-frozen-stab0-sparse0.005-msparse0-datast0-size5-noise0.001'
-name2 = 'heat-2-stab0-sparse0.005-msparse0.001-datast0-size5-noise0.001'
+name1 = 'heat-frozen-upwind-sparse0.005-noise0.001'
+name2 = 'heat-2-upwind-sparse0.005-noise0.001'
 # name3 = 
 errs = []
 errs.append(torch.load('checkpoint/'+name1+'/errs')) # blue
@@ -20,8 +20,9 @@ edgecolorlist = ('#1B2ACC','#CC4F1B') #, 'red') #, 'yellow')
 facecolorlist = ('#089FFF','#FF9848') #, 'red') #, 'yellow')
 
 alpha = 0.4 # facecolor transparency
+titlesize = 20
 
-showblock = [0,1,9,12,15]
+showblock = [0,2,6,9]
 showblockidx = list(options['--blocks'].index(block) for block in showblock)
 fig,ax = plt.subplots(1,len(showblock), sharex=False, sharey=True)
 title = ''
@@ -43,9 +44,9 @@ for i in range(len(showblock)):
         ax.flatten()[j].fill_between(x,y_down,y_up,edgecolor=edgecolorlist[s], facecolor=facecolorlist[s],\
                 linestyle='-', alpha=alpha)
     if l == 0:
-        ax.flatten()[j].set_title(r'warm-up', fontsize=20)
+        ax.flatten()[j].set_title(r'warm-up', fontsize=titlesize)
     else:
-        ax.flatten()[j].set_title(r''+str(block)+' $\delta t$-block', fontsize=20)
+        ax.flatten()[j].set_title(r''+str(block)+' $\delta t$-block', fontsize=titlesize)
     # ax.flatten()[j].set_yscale('log')
     ax.flatten()[j].set_ylim(1e-4,1e-2)
     ax.flatten()[j].set_xticks([1,10,20,30])

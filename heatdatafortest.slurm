@@ -9,7 +9,7 @@
 
 cd `pwd`
 name='heat-noise0.001'
-DEVICES=6
+DEVICES=4
 REPEATSIZE=20
 for ((i=0;i<$REPEATSIZE;i++))
 do

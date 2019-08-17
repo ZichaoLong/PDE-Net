@@ -14,54 +14,29 @@ DATANAME="burgers"
 constraint=2
 kernel_size=5
 stablize=0
-SPARSITY=(0 0.005)
+SPARSITY=(0)
+scheme=upwind
 momentsparsity=0.001
+viscosity=0.05
 noise=0.001
 data_start_time=1
-DEVICES=8
-REPEATSIZE=24
+DEVICES=4
+TRAINREPEATSIZE=24
 i=0
 
-for sparsity in ${SPARSITY[@]}; do
-    basename=${DATANAME}-${constraint}-stab${stablize}-sparse${sparsity}-msparse${momentsparsity}-datast${data_start_time}-size${kernel_size}-noise${noise}
-    for ((testidx=0;testidx<$REPEATSIZE;testidx++)); do
-        DEVICENUM=`expr $i % $DEVICES`
-        echo --name=${basename}-test${testidx} \
-            --kernel_size=${kernel_size} \
-            --dataname=$DATANAME --constraint=${constraint} --device=cuda:${DEVICENUM} \
-            --stablize=${stablize} --sparsity=${sparsity} --momentsparsity=${momentsparsity} \
-            --data_start_time=${data_start_time} \
-            --start_noise=${noise} --end_noise=${noise}
-        python train.py \
-            --name=${basename}-test${testidx} \
-            --kernel_size=${kernel_size} \
-            --start_noise=${noise} --end_noise=${noise} \
-            --dataname=$DATANAME --constraint=${constraint} --device=cuda:${DEVICENUM} \
-            --stablize=${stablize} --sparsity=${sparsity} --momentsparsity=${momentsparsity} \
-            --data_start_time=${data_start_time} &
-        echo $DEVICENUM
-        sleep 1
-        if [ "$DEVICENUM" -eq `expr $DEVICES - 1` ]
-        then
-            echo 'wait'
-            wait
-        fi
-        let i++
-    done
-done
-wait
-
-BLOCK=(2 9 12 15)
+BLOCK=(6)
 
 for sparsity in ${SPARSITY[@]}; do
     for block in ${BLOCK[@]}; do
-        basename=${DATANAME}-${constraint}-stab${stablize}-sparse${sparsity}-msparse${momentsparsity}-datast${data_start_time}-size${kernel_size}-noise${noise}
-        for ((testidx=0;testidx<$REPEATSIZE;testidx++)); do
-            name=${basename}-test${testidx}
-            python _burgerscoeffs.py ${name} ${block} &
+        echo ${block}
+        basename=${DATANAME}-${constraint}-${scheme}-sparse${sparsity}-noise${noise}
+        for ((trainidx=0;trainidx<$TRAINREPEATSIZE;trainidx++)); do
+            name=${basename}-id${trainidx}
+            echo $name
+            python _coeffs.py ${name} ${block} &
         done
         wait
-        python burgerscoeffs.py ${basename} ${REPEATSIZE} ${block}
+        python coeffs.py ${DATANAME} ${basename} ${TRAINREPEATSIZE} ${block}
     done
 done
 wait

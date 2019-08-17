@@ -74,7 +74,7 @@ else: # load checkpoint of layer-$start_from
 for block in blocks:
     if block<=start_from:
         continue
-    print('')
+    print('block: ', block)
     print('name: ', name)
     r = np.random.randn()+torch.randn(1,dtype=torch.float64,device=device).item()
     with callback.open() as output:
