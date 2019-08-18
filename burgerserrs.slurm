@@ -10,11 +10,11 @@
 cd `pwd`
 export MKL_NUM_THREADS=6
 DATANAME="burgers"
-CONSTRAINT=(2)
+CONSTRAINT=(2 frozen)
 kernel_size=5
 stablize=0
-SPARSITY=(0.005)
-SCHEME=(central)
+SPARSITY=(0.005 0)
+SCHEME=(upwind central)
 momentsparsity=0.001
 viscosity=0.05
 noise=0.001

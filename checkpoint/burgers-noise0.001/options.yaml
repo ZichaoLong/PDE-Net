@@ -24,7 +24,7 @@
 --end_noise: 0.001
 --eps: 6.283185307179586
 --freq: 4
---hidden_layers: 3
+--hidden_layers: 5
 --kernel_size: 5
 --max_dt: 0.000625
 --max_order: 2

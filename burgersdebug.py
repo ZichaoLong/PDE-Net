@@ -13,7 +13,7 @@ import conf,setenv,initparameters
 import matplotlib.pyplot as plt
 import aTEAM.pdetools as pdetools
 from pltutils import *
-#%%
+#%% generate a new model, and corresponding data_model, callback
 options_ref = configfile_ref = None
 options_ref = conf.default_options()
 options_ref['--name'] = 'tmp'
@@ -49,7 +49,7 @@ initparameters.initexpr(model_ref, viscosity=viscosity, pattern=dataname)
 for poly in model_ref.polys:
     poly.coeffs(iprint=1)
 
-#%%
+#%% load a learned model, of which the casename is options_1['--name']
 options_1 = {}
 options_1['--name'] = 'burgers-frozen-upwind-sparse0.005-noise0.001'
 configfile_1 = 'checkpoint/'+options_1['--name']+'/options.yaml'
@@ -62,9 +62,10 @@ else:
 globalnames_1, callback_1, model_1, data_model_1, sampling_1, addnoise_1 = setenv.setenv(options_1)
 globalnames_1['--batch_size'] = 2
 
+# load parameters trained after block 9
 callback_1.load(9)
 
-#%%
+#%% load a learned model, of which the casename is options_2['--name']
 options_2 = {}
 options_2['--name'] = 'burgers-2-upwind-sparse0.005-noise0.001'
 configfile_2 = 'checkpoint/'+options_2['--name']+'/options.yaml'
@@ -77,6 +78,7 @@ else:
 globalnames_2, callback_2, model_2, data_model_2, sampling_2, addnoise_2 = setenv.setenv(options_2)
 globalnames_2['--batch_size'] = 2
 
+# load parameters trained after block 9
 callback_2.load(9)
 
 #%% generate test data

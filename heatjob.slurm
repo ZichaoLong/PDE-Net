@@ -11,11 +11,11 @@
 cd `pwd`
 export MKL_NUM_THREADS=6
 DATANAME="heat"
-CONSTRAINT=(frozen)
+CONSTRAINT=(2 frozen)
 kernel_size=5
 stablize=0
-SPARSITY=(0.005 0)
-SCHEME=(upwind central)
+SPARSITY=(0.005)
+SCHEME=(upwind)
 momentsparsity=0.001
 viscosity=0.1
 noise=0.001

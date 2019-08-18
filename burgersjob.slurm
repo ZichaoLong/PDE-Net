@@ -11,7 +11,7 @@
 cd `pwd`
 export MKL_NUM_THREADS=6
 DATANAME="burgers"
-CONSTRAINT=(2)
+CONSTRAINT=(2 frozen)
 kernel_size=5
 stablize=0
 SPARSITY=(0.005 0)
