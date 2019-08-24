@@ -3,7 +3,7 @@
 The code are for the paper
 
 [PDE-Net: Learning PDEs from Data](https://arxiv.org/abs/1710.09668)[(ICML 2018)](https://icml.cc/Conferences/2018)<br />
-[Long Zichao](http://zlong.me/), [Lu Yiping](http://about.2prime.cn/), [Ma Xianzhong](https://www.researchgate.net/profile/Xianzhong_Ma) and [Dong Bin](http://bicmr.pku.edu.cn/~dongbin)
+[Long Zichao](https://scholar.google.com/citations?user=0KXcwnkAAAAJ&hl=zh-CN), [Lu Yiping](https://web.stanford.edu/~yplu/), [Ma Xianzhong](https://www.researchgate.net/profile/Xianzhong_Ma) and [Dong Bin](http://bicmr.pku.edu.cn/~dongbin)
 
 <div  align="center">
 <img src="figures/pdenet.jpg" width = "60%" />
