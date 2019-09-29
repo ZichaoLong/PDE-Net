@@ -11,11 +11,13 @@ This is the code for the paper
 
 If you find this code useful in your research then please cite
 ```
-@article{long2018pdeII,
-    title={PDE-Net 2.0: Learning PDEs from Data with A Numeric-Symbolic Hybrid Deep Network},
-    author={Long, Zichao and Lu, Yiping and Dong, Bin},
-    journal={arXiv preprint arXiv:1812.04426},
-    year={2018}
+@article{long2019pde,
+  title={PDE-Net 2.0: Learning PDEs from data with a numeric-symbolic hybrid deep network},
+  author={Long, Zichao and Lu, Yiping and Dong, Bin},
+  journal={Journal of Computational Physics},
+  pages={108925},
+  year={2019},
+  publisher={Elsevier}
 }
 ```
 
