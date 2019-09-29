@@ -11,7 +11,7 @@ The code are for the paper
 
 If you find the code useful in your research then please cite
 ```
-@inproceedings{long2018pdeI,
+@inproceedings{long2018pde,
   title={PDE-Net: Learning PDEs from Data},
   author={Long, Zichao and Lu, Yiping and Ma, Xianzhong and Dong, Bin},
   booktitle={International Conference on Machine Learning},
