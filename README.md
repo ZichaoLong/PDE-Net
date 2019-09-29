@@ -13,17 +13,19 @@ This repository is for the following two papers:
 
 If you find these code useful for your research then please cite
 ```
-@inproceedings{long2018pdeI,
+@inproceedings{long2018pde,
   title={PDE-Net: Learning PDEs from Data},
   author={Long, Zichao and Lu, Yiping and Ma, Xianzhong and Dong, Bin},
   booktitle={International Conference on Machine Learning},
   pages={3214--3222},
   year={2018}
 }
-@article{long2018pdeII,
-    title={PDE-Net 2.0: Learning PDEs from Data with A Numeric-Symbolic Hybrid Deep Network},
-    author={Long, Zichao and Lu, Yiping and Dong, Bin},
-    journal={arXiv preprint arXiv:1812.04426},
-    year={2018}
+@article{long2019pde,
+  title={PDE-Net 2.0: Learning PDEs from data with a numeric-symbolic hybrid deep network},
+  author={Long, Zichao and Lu, Yiping and Dong, Bin},
+  journal={Journal of Computational Physics},
+  pages={108925},
+  year={2019},
+  publisher={Elsevier}
 }
 ```
