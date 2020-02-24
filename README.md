@@ -36,7 +36,7 @@ source activate PDE-Net-2
 conda install pytorch=1.1 torchvision cudatoolkit=9.2 -c pytorch
 git clone git@github.com:ZichaoLong/PDE-Net.git
 cd PDE-Net
-git checkout PDE-Net-2 # switch your branch from 'master' to the 'PDE-Net-2'
+git checkout PDE-Net-2.0 # switch your branch from 'master' to the 'PDE-Net-2'
 git submodule init
 git submodule update
 ```
