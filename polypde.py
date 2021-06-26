@@ -149,8 +149,14 @@ class POLYPDE2D(torch.nn.Module):
         else:
             u = init
         assert u.shape[1] == self.channel_num
+        #for i in range(stepnum):
+        #    uadd = self.RightHandItems(u)
+        #    u = u+self.dt*uadd
+        #return u.view(init.size())
         for i in range(stepnum):
-            uadd = self.RightHandItems(u)
+            uaddhalf = self.RightHandItems(u)
+            uhalf = u+(self.dt/2)*uaddhalf
+            uadd = self.RightHandItems(uhalf)
             u = u+self.dt*uadd
         return u.view(init.size())
     def step(self, u):

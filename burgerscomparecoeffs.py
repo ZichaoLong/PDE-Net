@@ -7,11 +7,16 @@ from numpy import *
 import torch
 import matplotlib.pyplot as plt
 import conf
-name1 = 'burgers-2-upwind-sparse0-noise0.001-block6'
-name2 = 'burgers-2-upwind-sparse0.005-noise0.001-block6'
+#name1 = 'burgers-2-upwind-sparse0-noise0.001-block6'
+#name2 = 'burgers-2-upwind-sparse0.005-noise0.001-block6'
+name1 = 'burgers-2-upwind-sparse0-noise0.001'
+name2 = 'burgers-2-upwind-sparse0.005-noise0.001'
+
 D = []
-D.append(torch.load('coeffs/burgers/'+name1)) # blue
-D.append(torch.load('coeffs/burgers/'+name2)) # orange
+#D.append(torch.load('coeffs/burgers/'+name1)) # blue
+#D.append(torch.load('coeffs/burgers/'+name2)) # orange
+D.append(torch.load('checkpoint/'+name1'/params/block-9-xopt-final')) # blue
+D.append(torch.load('checkpoint/'+name2'/params/block-9-xopt-final')) # orange
 # D.append(torch.load('checkpoint/'+name3+'/errs')) # red
 # D.append(torch.load('checkpoint/'+name4+'/errs')) # yellow
 

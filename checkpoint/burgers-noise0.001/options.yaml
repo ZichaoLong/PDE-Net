@@ -13,11 +13,10 @@
 - 18
 --cell_num: 1
 --channel_names: u,v
---constraint: frozen
+--constraint: 2
 --data_start_time: 1.0
 --data_timescheme: rk2
 --dataname: burgers
---device: cuda:0
 --dt: 0.01
 --dtype: double
 --dx: 0.19634954084936207

@@ -3,13 +3,13 @@
 #SBATCH --qos=normal
 #SBATCH --partition=gpu
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=14
+#SBATCH --cpus-per-task=1
 #SBATCH --gres=gpu:1
 #SBATCH -t 8:00:00
 
 cd `pwd`
 name='burgers-noise0.001'
-DEVICES=4
+DEVICES=-1
 REPEATSIZE=20
 for ((i=0;i<$REPEATSIZE;i++))
 do
@@ -19,7 +19,7 @@ do
     TORCHSEED=`expr $j \* 100`
     echo "repeat batch:$i, select device:$DEVICENUM"
     echo "NPSEED: $NPSEED, TORCHSEED: $TORCHSEED"
-    python _test_data_gen.py $name $i cuda:$DEVICENUM $NPSEED $TORCHSEED &
+    python3 _test_data_gen.py $name $i cpu:$DEVICENUM $NPSEED $TORCHSEED 
     sleep 0.1
     if [ "$DEVICENUM" -eq `expr $DEVICES - 1` ]
     then

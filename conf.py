@@ -6,7 +6,7 @@ def default_options():
             '--name':'test',                # case name, string
             '--dtype':'double',             # string: 'double', 'float'
             '--device':'cpu',               # select device for the model, a string: 'cpu', 'cuda', 'cuda:0', 'cuda:3' etc.
-            '--constraint':'frozen',        # constraint type of convolution kernel: 'frozen'(string), 1 (int, 1st order precision), 2 (int, 2nd order precision), etc.
+            '--constraint':'2',        # constraint type of convolution kernel: 'frozen'(string), 1 (int, 1st order precision), 2 (int, 2nd order precision), etc.
             # computing region              # 
             '--dt':1e-2,                    # time step size of the learned model, double
             '--cell_num':1,                 # compute region: [0,eps*cell_num]**2, int

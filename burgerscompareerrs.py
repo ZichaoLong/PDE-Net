@@ -3,6 +3,7 @@ compare relative errs:
 change 'name1', 'name2' to compare test errs between different tasks
 """
 #%%
+import numpy as np
 from numpy import *
 import torch
 import matplotlib.pyplot as plt
@@ -26,7 +27,7 @@ alpha = 0.25 # facecolor transparency
 titlesize = 10
 labelsize = 5
 
-showblock = [0,1,2,3,4,5,6,9,12,15,18,21,24,27,30,35,40]
+showblock = [0,1,2,3,4,5,6,9,12]
 showblockidx = list(options['--blocks'].index(block) for block in showblock)
 fig,ax = plt.subplots(1,len(showblock), sharex=False, sharey=True)
 title = ''
@@ -41,13 +42,15 @@ for i in range(len(showblock)):
     block = showblock[i]
     for s in range(len(edgecolorlist)):
         y = errs[s][l][:,1:n].copy()
+        print(np.shape(errs[s]))
         y[np.isnan(y)] = np.inf
         y[y>10] = 10
         y_mean = sqrt(y).mean(axis=1)
         y_up = np.minimum(percentile(sqrt(y),q=upq,axis=0),np.ones(y.shape[1])*1e3)
         y_down = percentile(sqrt(y),q=downq,axis=0)
         ax.flatten()[j].fill_between(x,y_down,y_up,edgecolor=edgecolorlist[s], facecolor=facecolorlist[s],\
-                linestyle='-', alpha=alpha)
+                linestyle='-', alpha=alpha)   
+
     if l == 0:
         ax.flatten()[j].set_title(r'warm-up', fontsize=titlesize)
     else:
@@ -58,6 +61,8 @@ for i in range(len(showblock)):
     ax.flatten()[j].xaxis.set_tick_params(labelsize=labelsize)
     ax.flatten()[j].grid()
     j += 1
+    #print(len(showblock))  
+print(len(showblock))  
 ax[0].yaxis.set_tick_params(labelsize=15)
 #%%
 alpha = 0.5 # facecolor transparency

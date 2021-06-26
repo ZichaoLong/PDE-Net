@@ -4,7 +4,7 @@ import torch
 import conf,setenv
 
 configfile = sys.argv[1]
-configfile = 'checkpoint/'+configfile+'/options.yaml'
+configfile = 'checkpoint/burgers-frozen-upwind-sparse0.005-noise0.001/options.yaml'
 print('configfile: ', configfile)
 options = conf.setoptions(configfile=configfile,isload=True)
 if not torch.cuda.is_available():
